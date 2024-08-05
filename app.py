@@ -54,8 +54,8 @@ async def partidos(ctx, country: str, season: int, date: str):
     if matches:
         response = ""
         for match in matches['response']:
-            response += f"{match['teams']['home']['name']} vs {match['teams']
-                                                               ['away']['name']} at {match['fixture']['date']}\n"
+            response += (f"{match['teams']['home']['name']} vs {match['teams']['away']['name']} - Resultado: "
+                         f"{match['score']['fulltime']['home']} - {match['score']['fulltime']['away']}\n")
         await ctx.send(response)
     else:
         await ctx.send('No se encontraron partidos')
