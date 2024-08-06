@@ -3,7 +3,6 @@ from discord.ext import commands
 import requests
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 
 load_dotenv()
 
@@ -48,7 +47,8 @@ async def info(ctx):
 
 
 @bot.command()
-async def partidos(ctx, country: str, season: int, date: str):
+async def partidos(ctx, country: str, date: str):
+    season = date.split('-')[0]
     league_id = countrys[country.lower()]
     matches = get_football_matches_by_league(date, league_id, season)
     if matches:
