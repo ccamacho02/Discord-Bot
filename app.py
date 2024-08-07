@@ -1,10 +1,14 @@
 import discord
 from discord.ext import commands
 import requests
+import re
 import os
+from urllib.parse import urlencode
 from dotenv import load_dotenv
 
 load_dotenv()
+
+DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 
 countrys = {
     'colombia': 239,
@@ -29,9 +33,6 @@ def get_football_matches_by_league(date, league_id, season):
         return response.json()
     else:
         return None
-
-
-token = os.getenv('DISCORD_TOKEN')
 
 
 intents = discord.Intents.all()
@@ -61,6 +62,22 @@ async def partidos(ctx, country: str, date: str):
         await ctx.send('No se encontraron partidos')
 
 
+@bot.command()
+async def youtube(ctx, *, search):
+    base_url = 'https://www.youtube.com/results?'
+    query_string = urlencode({'search_query': search})
+    url = base_url + query_string
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'}
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        await ctx.send('No se pudo realizar la busqueda')
+    else:
+        search_results = re.findall(
+            '\\/watch\\?v=(.{11})', response.text)
+        await ctx.send('https://www.youtube.com/watch?v=' + search_results[0])
+
+
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -71,4 +88,4 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-bot.run(token)
+bot.run(DISCORD_TOKEN)
